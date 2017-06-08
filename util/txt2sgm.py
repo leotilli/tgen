@@ -13,32 +13,35 @@ sys.excepthook = exc_info_hook
 
 
 def convert(args):
-    insts = [[]]
+    insts = []
+    max_refs = 1
+
     with codecs.open(args.in_file, 'rb', 'UTF-8') as fh:
         cur_no = 0
         for line in fh:
             line = line.strip()
             if args.multi_ref:
+                if cur_no > max_refs:
+                    max_refs = cur_no
                 if not line:
-                    for ilist in insts[cur_no:]:  # no more refs for this instance: add empty
-                        ilist.append('')
                     cur_no = 0
                 else:
-                    if cur_no >= len(insts):
-                        insts.append([''] * (len(insts[0]) - 1))
-                    insts[cur_no].append(line)
+                    if cur_no == 0:
+                        insts.append([])
+                    insts[-1].append(line)
                     cur_no += 1
             else:
-                insts[0].append(line)
+                insts.append([line])
 
     with codecs.open(args.out_file, 'wb', 'UTF-8') as fh:
         settype = 'tstset' if args.type == 'test' else args.type + 'set'
         fh.write('<%s setid="%s" srclang="any" trglang="%s">\n' % (settype, args.name, args.lang))
-        for inst_set_no, inst_set in enumerate(insts):
-            sysid = args.sysid + ('' if len(insts) == 1 else '_%d' % inst_set_no)
+        for inst_set_no in xrange(max_refs):
+            sysid = args.sysid + ('' if max_refs == 1 else '_%d' % inst_set_no)
             fh.write('<doc docid="test" genre="news" origlang="any" sysid="%s">\n<p>\n' % sysid)
-            for inst_no, inst in enumerate(inst_set, start=1):
-                fh.write('<seg id="%d">%s</seg>\n' % (inst_no, inst))
+            for inst_no, refs in enumerate(insts, start=1):
+                ref = refs[inst_set_no % len(refs)]  # cycle refs to have max. number
+                fh.write('<seg id="%d">%s</seg>\n' % (inst_no, ref))
             fh.write('</p>\n</doc>\n')
         fh.write('</%s>' % settype)
 
