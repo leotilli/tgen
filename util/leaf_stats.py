@@ -26,5 +26,5 @@ for ttree in ttrees_from_doc(read_ttrees(sys.argv[1]), 'en', ''):
 
 
 out = codecs.getwriter('UTF-8')(sys.stdout)
-for node_id, val in stats.iteritems():
-    print >> out, node_id, "\t", val['int'], "\t", val['leaf']
+for node_id, val in stats.items():
+    print(node_id, "\t", val['int'], "\t", val['leaf'], file=out)

@@ -79,7 +79,7 @@ class NNRanker(BasePerceptronRanker):
 
     def _ff_layers(self, name, num_layers, perc_layer=False):
         ret = []
-        for i in xrange(num_layers):
+        for i in range(num_layers):
             ret.append([FeedForward(name + str(i + 1), self.num_hidden_units, T.tanh, self.init)])
         if perc_layer:
             ret.append([FeedForward('perc', 1, None, self.init)])
@@ -278,7 +278,7 @@ class EmbNNRanker(NNRanker):
 
     def _conv_layers(self, name, num_layers=1, pooling=None):
         ret = []
-        for i in xrange(num_layers):
+        for i in range(num_layers):
             ret.append([Conv1D(name + str(i + 1),
                                filter_length=self.cnn_filter_length,
                                num_filters=self.cnn_num_filters,
@@ -289,7 +289,7 @@ class EmbNNRanker(NNRanker):
 
     def _id_layers(self, name, num_layers):
         ret = []
-        for i in xrange(num_layers):
+        for i in range(num_layers):
             ret.append([Identity(name + str(i + 1))])
         return ret
 

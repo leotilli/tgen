@@ -8,7 +8,7 @@
 from __future__ import unicode_literals
 from threading import Thread
 import socket
-import cPickle as pickle
+import pickle
 import time
 import os
 from collections import deque
@@ -17,12 +17,12 @@ import re
 import sys
 import hashlib
 
-from rpyc import Service, connect, async
+from rpyc import Service, connect, async_
 from rpyc.utils.server import ThreadPoolServer
 
 from pytreex.core.util import file_stream
 
-from logf import log_info, set_debug_stream, log_debug
+from .logf import log_info, set_debug_stream, log_debug
 from tgen.logf import log_warn, is_debug_stream
 from tgen.rnd import rnd
 from tgen.parallel_percrank_train import ServiceConn
@@ -43,7 +43,7 @@ def get_worker_registrar_for(head):
             log_info('Worker %s:%d connected, initializing training.' % (host, port))
             conn = connect(host, port, config={'allow_pickle': True})
             # initialize the remote server (with training data etc.)
-            init_func = async(conn.root.init_training)
+            init_func = async_(conn.root.init_training)
             # add unique 'scope suffix' so that the models don't clash in ensembles
             head.cfg['scope_suffix'] = hashlib.md5("%s:%d" % (host, port)).hexdigest()
             req = init_func(pickle.dumps(head.cfg, pickle.HIGHEST_PROTOCOL))
@@ -99,7 +99,7 @@ class ParallelSeq2SeqTraining(object):
         # spawn training jobs
         log_info('Spawning jobs...')
         host_short, _ = self.host.split('.', 1)  # short host name for job names
-        for j in xrange(self.jobs_number):
+        for j in range(self.jobs_number):
             # set up debugging logfile only if we have it on the head
             debug_logfile = ('"PRT%02d.debug-out.txt.gz"' % j) if is_debug_stream() else 'None'
             job = Job(header='from tgen.parallel_seq2seq_train import run_training',
@@ -114,7 +114,7 @@ class ParallelSeq2SeqTraining(object):
         try:
             cur_assign = 0
             results = [None] * self.jobs_number
-            rnd_seeds = [rnd.random() for _ in xrange(self.jobs_number)]
+            rnd_seeds = [rnd.random() for _ in range(self.jobs_number)]
 
             # assign training and wait for it to finish
             while cur_assign < self.jobs_number or self.pending_requests:
@@ -134,7 +134,7 @@ class ParallelSeq2SeqTraining(object):
                     if validation_files is not None:
                         validation_files = ','.join([os.path.relpath(f, self.work_dir)
                                                      for f in validation_files.split(',')])
-                    train_func = async(sc.conn.root.train)
+                    train_func = async_(sc.conn.root.train)
                     req = train_func(rnd_seeds[cur_assign],
                                      os.path.relpath(das_file, self.work_dir),
                                      os.path.relpath(ttree_file, self.work_dir),

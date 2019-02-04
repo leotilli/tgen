@@ -40,15 +40,15 @@ class Layer(object):
         if init_type == 'uniform_glorot10':
             w_init = np.reshape(np.asarray([rnd.uniform(-np.sqrt(6. / dim_sum),
                                                         np.sqrt(6. / dim_sum))
-                                            for _ in xrange(total_size)]),
+                                            for _ in range(total_size)]),
                                 newshape=shape)
         elif init_type == 'uniform_005':
             w_init = np.reshape(np.asarray([rnd.uniform(-0.05, 0.05)
-                                            for _ in xrange(total_size)]),
+                                            for _ in range(total_size)]),
                                 newshape=shape)
         elif init_type == 'norm_sqrt':
             w_init = np.reshape(np.asarray([rnd.gauss(0, math.sqrt(2.0 / shape[0]))
-                                            for _ in xrange(total_size)]),
+                                            for _ in range(total_size)]),
                                 newshape=shape)
         elif init_type == 'ones':
             w_init = np.ones(shape=shape)
@@ -394,8 +394,8 @@ class RankNN(NN):
         super(RankNN, self).__init__(layers, input_shapes, input_types, normgrad)
 
         # create variables
-        x = [input_types[i]('x' + str(i)) for i in xrange(len(layers[0]))]
-        x_gold = [input_types[i]('x' + str(i)) for i in xrange(len(layers[0]))]
+        x = [input_types[i]('x' + str(i)) for i in range(len(layers[0]))]
+        x_gold = [input_types[i]('x' + str(i)) for i in range(len(layers[0]))]
 
         # TODO: make this depend on input_shapes
         # Debugging: test values
@@ -468,7 +468,7 @@ class ClassifNN(NN):
         super(ClassifNN, self).__init__(layers, input_shapes, input_types, normgrad)
 
         # create variables
-        x = [input_types[i]('x' + str(i)) for i in xrange(len(layers[0]))]
+        x = [input_types[i]('x' + str(i)) for i in range(len(layers[0]))]
         y = x
         shapes = input_shapes
 

@@ -13,11 +13,12 @@ import random
 import re
 import sys
 from argparse import ArgumentParser
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 from itertools import cycle
 
-import unicodecsv as csv
+import csv
 
+from tgen.logf import debug_stream
 from tgen.debug import exc_info_hook
 sys.excepthook = exc_info_hook
 
@@ -66,7 +67,7 @@ def distort_response(response):
     result = response
     loop = 0
     while loop < 2 or result == response:
-        tok_no = random.choice(range(len(toks)))
+        tok_no = random.choice(list(range(len(toks))))
         tok = toks[tok_no].lower() if tok_no == 0 else toks[tok_no]
         if re.match(r'^([!?,:.]|the|an?)$', tok):
             continue
@@ -140,7 +141,7 @@ def main():
         header = ('context', 'text_a', 'text_b', 'origin_a', 'origin_b')
 
     if len(data) < args.num_samples:
-        print >> sys.stderr, 'Not enough samples, generating only %d.' % len(data)
+        print('Not enough samples, generating only %d.' % len(data), file=debug_stream)
 
     random.shuffle(data)
     data = data[:args.num_samples]

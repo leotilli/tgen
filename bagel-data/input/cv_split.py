@@ -29,13 +29,13 @@ import re
 
 def write_data(dir, fname_base, fname_repl, data):
     chunk_size = len(data[0])
-    for chunk_idx in xrange(chunk_size):
+    for chunk_idx in range(chunk_size):
         fname_suff = ".%d" % chunk_idx if chunk_size > 1 else ''
         file_name = os.path.join(dir, re.sub(r'^[^-._]*', fname_repl + fname_suff, fname_base))
-        print 'WRITING ' + file_name
+        print('WRITING ' + file_name)
         with file_stream(file_name, 'w') as fh:
             for chunk in data:
-                print >> fh, chunk[chunk_idx],
+                print(chunk[chunk_idx], file=fh)
 
 
 def main(argv):
@@ -75,16 +75,16 @@ def main(argv):
 
         if ordering is None:
             # create ordering
-            ordering = range(len(data))
+            ordering = list(range(len(data)))
             random.shuffle(ordering)
 
             # create directories
-            for fold_no in xrange(folds):
+            for fold_no in range(folds):
                 os.mkdir(dir_prefix + "%02d" % fold_no)
             
         # output as train and test into all CV portions
         fold_size, bigger_folds = divmod(len(data), folds)
-        for fold_no in xrange(folds):
+        for fold_no in range(folds):
             # compute test data bounds
             if fold_no < bigger_folds:
                 test_lo = (fold_size + 1) * fold_no

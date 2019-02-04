@@ -313,7 +313,7 @@ def sample_gen(args):
     gen_doc = Document()
     das = read_das(fname_da_test)
     for da in das:
-        for _ in xrange(num_to_generate):  # repeat generation n times
+        for _ in range(num_to_generate):  # repeat generation n times
             tgen.generate_tree(da, gen_doc)
 
     # evaluate if needed

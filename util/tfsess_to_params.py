@@ -11,7 +11,7 @@ from __future__ import unicode_literals
 from argparse import ArgumentParser
 from tgen.seq2seq import Seq2SeqBase
 from pytreex.core.util import file_stream
-import cPickle as pickle
+import pickle
 import re
 from tgen.logf import log_info
 from tensorflow.python.framework.ops import reset_default_graph

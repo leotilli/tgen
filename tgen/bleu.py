@@ -39,7 +39,7 @@ class BLEUMeasure(object):
         @param ref_sents: the corresponding reference sentences (list/tuple of trees/tokens)
         """
 
-        for i in xrange(self.max_ngram):
+        for i in range(self.max_ngram):
             self.hits[i] += self.compute_hits(i+1, pred_sent, ref_sents)
             self.cand_lens[i] += len(pred_sent) - i
 
@@ -61,7 +61,7 @@ class BLEUMeasure(object):
 
             for ngram in self.ngrams(n, ref_sent):
                 ref_ngrams[ngram] += 1
-            for ngram, cnt in ref_ngrams.iteritems():
+            for ngram, cnt in ref_ngrams.items():
                 merged_ref_ngrams[ngram] = max((merged_ref_ngrams.get(ngram, 0), cnt))
 
         pred_ngrams = defaultdict(int)
@@ -69,7 +69,7 @@ class BLEUMeasure(object):
             pred_ngrams[ngram] += 1
 
         hits = 0
-        for ngram, cnt in pred_ngrams.iteritems():
+        for ngram, cnt in pred_ngrams.items():
             hits += min(merged_ref_ngrams.get(ngram, 0), cnt)
 
         return hits

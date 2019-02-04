@@ -7,13 +7,13 @@ Generating candidate subtrees to enhance the current candidate tree.
 
 from __future__ import unicode_literals
 from collections import defaultdict, Counter
-import cPickle as pickle
+import pickle
 
-from logf import log_info
+from .logf import log_info
 from pytreex.core.util import file_stream
 
-from futil import read_das, read_ttrees, ttrees_from_doc
-from tree import TreeNode, NodeData
+from .futil import read_das, read_ttrees, ttrees_from_doc
+from .tree import TreeNode, NodeData
 from tgen.logf import log_warn, log_debug
 from tgen.tree import TreeData
 from tgen.planner import CandidateList
@@ -135,7 +135,7 @@ class RandomCandidateGenerator(object):
             for tnode in ttree.get_descendants(add_self=True):
                 level_nodes[tnode.get_depth()] += 1
             for dai in da:
-                for level in level_nodes.iterkeys():
+                for level in level_nodes.keys():
                     max_level_nodes[dai][level] = max((max_level_nodes[dai][level],
                                                        level_nodes[level]))
 
@@ -156,8 +156,8 @@ class RandomCandidateGenerator(object):
 
         if self.node_limits:
             self.node_limits = {dai: {'total': max_total}
-                                for dai, max_total in max_total_nodes.iteritems()}
-            for dai, max_levels in max_level_nodes.iteritems():
+                                for dai, max_total in max_total_nodes.items()}
+            for dai, max_levels in max_level_nodes.items():
                 self.node_limits[dai].update(max_levels)
         else:
             self.node_limits = None
@@ -252,7 +252,7 @@ class RandomCandidateGenerator(object):
                 for parent_id in self.child_type_counts[dai]:
                     merged_counts[parent_id].update(self.child_type_counts[dai][parent_id])
             except KeyError:
-                log_warn('DAI ' + unicode(dai) + ' unknown, adding nothing to CDF.')
+                log_warn('DAI ' + str(dai) + ' unknown, adding nothing to CDF.')
 
 #         log_info('Node types: %d' % sum(len(c.keys()) for c in merged_counts.values()))
 
@@ -314,7 +314,7 @@ class RandomCandidateGenerator(object):
                 for level, level_limit in self.node_limits[dai].iteritems():
                     merged_limits[level] = max((level_limit, merged_limits[level]))
             except KeyError:
-                log_warn('DAI ' + unicode(dai) + ' unknown, limits unchanged.')
+                log_warn('DAI ' + str(dai) + ' unknown, limits unchanged.')
         return merged_limits
 
     def cdfs_from_counts(self, counts):
@@ -439,7 +439,7 @@ class RandomCandidateGenerator(object):
         """Get the total expected number of future children in the given tree (based on the
         expectations for the individual node types)."""
         promise = 0.0
-        for node_idx in xrange(len(cand_tree)):
+        for node_idx in range(len(cand_tree)):
             # if the key does not exist, it means that this node type is always a leaf in training data,
             # hence expected number of children is 0 in that case.
             exp_child_num = self.exp_child_num.get(self._parent_node_id(cand_tree.nodes[node_idx]), 0)
@@ -470,9 +470,9 @@ class RandomCandidateGenerator(object):
                     open_list.push(succ, len(succ))
 
         if not found:
-            log_info('Did not find tree: ' + unicode(tree) + ' for DA: ' + unicode(da) + ('(total %d trees)' % tree_no))
+            log_info('Did not find tree: ' + str(tree) + ' for DA: ' + str(da) + ('(total %d trees)' % tree_no))
             return False
-        log_info('Found tree: %s for DA: %s (as %d-th tree)' % (unicode(tree), unicode(da), tree_no))
+        log_info('Found tree: %s for DA: %s (as %d-th tree)' % (str(tree), str(da), tree_no))
         return tree_no
 
     def can_generate_greedy(self, tree, da):
@@ -498,9 +498,9 @@ class RandomCandidateGenerator(object):
 
         # we have hit a dead end
         if cur_subtree != tree:
-            log_info('Did not find tree: ' + unicode(tree) + ' for DA: ' + unicode(da))
+            log_info('Did not find tree: ' + str(tree) + ' for DA: ' + str(da))
             return False
 
         # everything alright
-        log_info('Found tree: %s for DA: %s' % (unicode(tree), unicode(da)))
+        log_info('Found tree: %s for DA: %s' % (str(tree), str(da)))
         return True

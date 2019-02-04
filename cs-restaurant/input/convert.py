@@ -72,7 +72,7 @@ class MorphoAnalyzer(object):
         @param forms_in: a deque of forms tokens
         @return: (form, tagged lemmas list) or (None, None)
         """
-        for test_len in xrange(min(self._sf_max_len, len(forms_in)), 0, -1):
+        for test_len in range(min(self._sf_max_len, len(forms_in)), 0, -1):
             # test the string, handle number placeholders
             full_substr = [form for form in islice(forms_in, 0, test_len)]
             test_substr = tuple(['_' if re.match(r'^[0-9]+$', form) else form.lower()
@@ -86,7 +86,7 @@ class MorphoAnalyzer(object):
                         lemma = re.sub(r'_', num, lemma, count=1)
                     tls[-1].lemma = lemma
                     tls[-1].tag = tag
-                for _ in xrange(len(test_substr)):  # move on in the sentence
+                for _ in range(len(test_substr)):  # move on in the sentence
                     forms_in.popleft()
                 return " ".join(full_substr), tls
         return None, None
@@ -112,7 +112,7 @@ class MorphoAnalyzer(object):
                     form = forms_in.popleft()
                     analyses = TaggedLemmas()
                     self._analyzer.analyze(form, 1, analyses)
-                    for i in xrange(len(analyses)):  # shorten lemmas (must access the vector directly)
+                    for i in range(len(analyses)):  # shorten lemmas (must access the vector directly)
                         analyses[i].lemma = self._analyzer.rawLemma(analyses[i].lemma)
                     self._analyses_buf.push_back(analyses)
 
@@ -164,25 +164,25 @@ class MorphoAnalyzer(object):
     def _write_plain(self, output_file, data_items):
         with codecs.open(output_file, 'wb', encoding='UTF-8') as fh:
             for data_item in data_items:
-                print >> fh, unicode(data_item)
+                print(str(data_item), file=fh)
 
     def _write_conll(self, output_file, data_items):
         with codecs.open(output_file, 'wb', encoding='UTF-8') as fh:
             for line in data_items:
                 for idx, tok in enumerate(line, start=1):
-                    print >> fh, "\t".join((str(idx),
+                    print("\t".join((str(idx),
                                             tok[0].replace(' ', '_'),
                                             tok[1].replace(' ', '_'),
                                             '_', tok[2], '_',
-                                            '0', '_', '_', '_'))
-                print >> fh
+                                            '0', '_', '_', '_')), file=fh)
+                print(file=fh)
 
     def _write_interleaved(self, output_file, data_items):
         with codecs.open(output_file, 'wb', encoding='UTF-8') as fh:
             for line in data_items:
                 for _, lemma, tag in line:
-                    print >> fh, lemma.replace(' ', '_'), tag,
-                print >> fh
+                    print(lemma.replace(' ', '_'), tag, file=fh, end=' ')
+                print(file=fh)
 
     def write_text(self, data_file, out_format, subrange, delex=False):
         """Write output sentences for the given data subrange.
@@ -209,7 +209,7 @@ class MorphoAnalyzer(object):
         @param data_file: output file name
         @param subrange: data range (slice) from buffers to write
         """
-        self._write_plain(data_file, ["\t".join([unicode(abst_) for abst_ in abst])
+        self._write_plain(data_file, ["\t".join([str(abst_) for abst_ in abst])
                                       for abst in self._absts[subrange]])
 
     def write_das(self, data_file, subrange, delex=False):
@@ -282,7 +282,7 @@ class MorphoAnalyzer(object):
                     log_info("Cannot delexicalize slot  %s  at %d:\nDA: %s\nTx: %s\n" %
                              (dai.slot,
                               text_idx,
-                              unicode(da),
+                              str(da),
                               " ".join([form for form, _, _ in text])))
             # save the delexicalized text and the delexicalization instructions
             self._delexed_texts.append(delex_text)
@@ -329,7 +329,7 @@ def convert(args):
         # compute sizes for all but the 1st part (+ round them)
         total = float(sum(data_sizes))
         remain = analyzer.buf_length()
-        for part_no in xrange(len(data_sizes) - 1, 0, -1):
+        for part_no in range(len(data_sizes) - 1, 0, -1):
             part_size = int(round(analyzer.buf_length() * (data_sizes[part_no] / total)))
             data_sizes[part_no] = part_size
             remain -= part_size

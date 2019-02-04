@@ -58,7 +58,7 @@ def process_all(args):
                       (bootstrap, exp_num1, exp_num2, out_file))
             with open(out_file) as fh:
                 bootstrap_data = fh.readlines()
-                print "%dvs%d BLEU: %s" % (exp_num1, exp_num2, bootstrap_data[0].strip())
+                print("%dvs%d BLEU: %s" % (exp_num1, exp_num2, bootstrap_data[0].strip()))
 
 
 if __name__ == '__main__':

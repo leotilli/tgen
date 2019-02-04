@@ -19,7 +19,7 @@ except ImportError:
     log_warn('Pytreex modules not available, will not be able to evaluate trees.')
 
 
-EvalTypes = Enum(b'EvalTypes', b'TOKEN NODE DEP')
+EvalTypes = Enum('EvalTypes', 'TOKEN NODE DEP')
 EvalTypes.__doc__ = """Evaluation flavors (tokens, tree node-only, tree dependency)"""
 
 
@@ -61,10 +61,10 @@ def corr_pred_gold(gold, pred, eval_type=EvalTypes.NODE):
     gold_counts = collect_counts(gold, eval_type)
     pred_counts = collect_counts(pred, eval_type)
     ccount, pcount = 0, 0
-    for node_id, node_count in pred_counts.iteritems():
+    for node_id, node_count in pred_counts.items():
         pcount += node_count
         ccount += min(node_count, gold_counts[node_id])
-    gcount = sum(node_count for node_count in gold_counts.itervalues())
+    gcount = sum(node_count for node_count in gold_counts.values())
     return ccount, pcount, gcount
 
 
@@ -80,7 +80,8 @@ def recall(gold, pred, eval_type=EvalTypes.NODE):
 
 
 def f1(gold, pred, eval_type=EvalTypes.NODE):
-    return f1_from_counts(corr_pred_gold(gold, pred, eval_type))
+    ccount, pcount, gcount = corr_pred_gold(gold, pred, eval_type)
+    return f1_from_counts(ccount, pcount, gcount)
 
 
 def f1_from_counts(correct, predicted, gold):
@@ -121,8 +122,8 @@ def max_common_subphrase_length(a, b):
     """Return the length of the longest common subphrase of a and b; where a and b are
     lists of tokens (form+tag)."""
     longest = 0
-    for sp_a in xrange(len(a)):
-        for sp_b in xrange(len(b)):
+    for sp_a in range(len(a)):
+        for sp_b in range(len(b)):
             pos_a = sp_a
             pos_b = sp_b
             # disregard tags for comparison

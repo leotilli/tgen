@@ -11,7 +11,7 @@ import sys
 from argparse import ArgumentParser
 from collections import defaultdict
 
-import unicodecsv as csv
+import csv
 import numpy.random as rnd
 
 from tgen.debug import exc_info_hook
@@ -87,7 +87,7 @@ def pairwise_bootstrap(data, iters):
     label_1 = next(d for d in data if d != label_0)
 
     p0_better, p1_better, ties = 0, 0, 0
-    for i in xrange(iters):
+    for i in range(iters):
         sample = rnd.randint(0, len(data), len(data))
         s_p0_good = sum(1 if data[i] == label_0 else 0 for i in sample)
         s_p1_good = sum(1 if data[i] == label_1 else 0 for i in sample)
@@ -142,33 +142,33 @@ def main():
                 res.append(row.origin_a)
                 res_by_id[row._unit_id][row.origin_a] += 1
 
-    print "Results:"
-    for key, val in votes.iteritems():
-        print '%s\t%d (%2.2f)' % (key, val, float(val) / len(res) * 100)
+    print("Results:")
+    for key, val in votes.items():
+        print('%s\t%d (%2.2f)' % (key, val, float(val) / len(res) * 100))
 
     agreement_stats = defaultdict(int)
-    for unit_id, stats in res_by_id.iteritems():
-        stats_key = " ".join(["%s=%d" % (key, times) for key, times in stats.iteritems()])
+    for unit_id, stats in res_by_id.items():
+        stats_key = " ".join(["%s=%d" % (key, times) for key, times in stats.items()])
         agreement_stats[stats_key] += 1
 
-    print "\nAgreement:"
-    for key, val in agreement_stats.iteritems():
-        print '%s\t%d (%2.2f)' % (key, val, float(val) / len(res_by_id) * 100)
+    print("\nAgreement:")
+    for key, val in agreement_stats.items():
+        print('%s\t%d (%2.2f)' % (key, val, float(val) / len(res_by_id) * 100))
 
-    print "\nBootstrap:"
+    print("\nBootstrap:")
     pairwise_bootstrap(res, args.bootstrap_iters)
 
     if args.example_outputs:
-        all_keys = next(res_by_id.itervalues()).keys()
+        all_keys = next(res_by_id.values()).keys()
         for good_key in all_keys:
-            print "\n%s = 0:\n=================" % good_key
-            for unit_id, stats in res_by_id.iteritems():
+            print("\n%s = 0:\n=================" % good_key)
+            for unit_id, stats in res_by_id.items():
                 if all([key == good_key or res_by_id[unit_id][key] == 0 for key in all_keys]):
                     printout(options[unit_id]['context'], YELLOW)
-                    print " : ",
+                    print(" : ", end=' ')
                     printout(options[unit_id][good_key], GREEN)
-                    print " > ",
-                    print " ".join([options[unit_id][key] for key in all_keys if key != good_key])
+                    print(" > ", end=' ')
+                    print(" ".join([options[unit_id][key] for key in all_keys if key != good_key]))
 
 
 if __name__ == '__main__':

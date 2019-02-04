@@ -11,9 +11,9 @@ class T(object):
         return x + 1 + self.param
 
 a = T()
-print a.func(1)
-print a.func(1)
-print a.func.hits, a.func.misses
+print(a.func(1))
+print(a.func(1))
+print(a.func.hits, a.func.misses)
 a.param = 2
-print a.func(1)
-print a.func.hits, a.func.misses
+print(a.func(1))
+print(a.func.hits, a.func.misses)

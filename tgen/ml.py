@@ -637,7 +637,7 @@ class DictVectorizer(BaseEstimator, TransformerMixin):
                         numeric_feats[f] = (lo, hi, vals)
 
             # compute boundary values (only if there are more than 4 distinct values)
-            for f, (lo, hi, vals) in numeric_feats.iteritems():
+            for f, (lo, hi, vals) in numeric_feats.items():
                 if vals is None:
                     avg = (lo + hi) / 2
                     self.num_bounds_[f] = [(lo + avg) / 2, avg, (hi + avg) / 2]

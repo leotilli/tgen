@@ -60,7 +60,7 @@ def get_abstraction(text, conc_da, slot_names=False):
         except ValueError:
             continue
 
-    return ' '.join(toks), "\t".join([unicode(a) for a in abstr])
+    return ' '.join(toks), "\t".join([str(a) for a in abstr])
 
 
 def convert_abstractions(abstr_str):
@@ -85,12 +85,12 @@ def write_part(file_name, data, part_size, repeat=1, trunc=True, separate=False)
         for inst in data[0:part_size]:
             if isinstance(inst, list):
                 for inst_part in inst:
-                    fh.write(unicode(inst_part).encode('utf-8') + b"\n")
+                    fh.write(str(inst_part).encode('utf-8') + b"\n")
                 if separate:
                     fh.write("\n")
             else:
-                for _ in xrange(repeat):
-                    fh.write(unicode(inst).encode('utf-8') + b"\n")
+                for _ in range(repeat):
+                    fh.write(str(inst).encode('utf-8') + b"\n")
     if trunc:
         del data[0:part_size]
 
@@ -133,7 +133,7 @@ def convert(args):
             texts.append(texts_)
             items += 1
 
-        print 'Processed', items, 'items.'
+        print('Processed', items, 'items.')
 
     if args.split:
         # get file name prefixes and compute data sizes for all the parts to be split
@@ -143,7 +143,7 @@ def convert(args):
         # compute sizes for all but the 1st part (+ round them)
         total = float(sum(data_sizes))
         remain = items
-        for part_no in xrange(len(data_sizes) - 1, 0, -1):
+        for part_no in range(len(data_sizes) - 1, 0, -1):
             part_size = int(round(items * (data_sizes[part_no] / total)))
             data_sizes[part_no] = part_size
             remain -= part_size

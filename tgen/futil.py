@@ -6,7 +6,7 @@ Various utility functions.
 """
 
 from __future__ import unicode_literals
-import cPickle as pickle
+import pickle
 import codecs
 import gzip
 import regex
@@ -14,17 +14,17 @@ import re
 from io import IOBase, BytesIO
 from codecs import StreamReader, StreamWriter
 
-from tree import TreeData
-from data import Abst, DA
+from .tree import TreeData
+from .data import Abst, DA
 
 
-def file_stream(filename, mode='r', encoding='UTF-8'):
+def file_stream(filename, mode='rb', encoding='utf-8'):
     """Given a file stream or a file name, return the corresponding stream,
     handling GZip. Depending on mode, open an input or output stream.
     (A copy from pytreex.core.util to remove dependency)
     """
     # open file
-    if isinstance(filename, (file, IOBase, StreamReader, StreamWriter)):
+    if isinstance(filename, (IOBase, StreamReader, StreamWriter)):
         fh = filename
     elif filename.endswith('.gz'):
         fh = gzip.open(filename, mode)
@@ -135,7 +135,7 @@ def create_ttree_doc(trees, base_doc, language, selector):
     if base_doc is None:
         from pytreex.core.document import Document
         base_doc = Document()
-        for _ in xrange(len(trees)):
+        for _ in range(len(trees)):
             base_doc.create_bundle()
     for tree, bundle in zip(trees, base_doc.bundles):
         zone = bundle.get_or_create_zone(language, selector)
@@ -215,16 +215,16 @@ def read_tokens(tok_file, ref_mode=False, do_tokenize=False):
 
 def write_tokens(doc, tok_file):
     """Write all sentences from a document into a text file."""
-    with file_stream(tok_file, 'w') as fh:
+    with file_stream(tok_file, 'wb') as fh:
         for sent in doc:
             toks = [tok for (tok, _) in sent]
             # TODO some nice detokenization etc.
-            print >> fh, ' '.join(toks)
+            print(' '.join(toks), file=fh)
 
 
 def chunk_list(l, n):
     """ Yield successive n-sized chunks from l."""
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i + n]
 
 

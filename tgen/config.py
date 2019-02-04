@@ -183,7 +183,7 @@ class Config(object):
         """
         if d is None:
             d = self.config
-        for k, v in d.iteritems():
+        for k, v in d.items():
             if isinstance(v, collections.Mapping):
                 self.config_replace(p, s, v)
             elif isinstance(v, str):

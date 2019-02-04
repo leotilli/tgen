@@ -8,7 +8,7 @@ Lexicalization functions (postprocessing generated trees).
 from __future__ import unicode_literals
 import json
 import re
-import cPickle as pickle
+import pickle
 import numpy as np
 import tempfile
 import time
@@ -117,7 +117,7 @@ class KenLMFormSelect(FormSelect):
     def get_surface_form(self, sentence, pos, possible_forms):
         state, dummy_state = kenlm.State(), kenlm.State()
         self._lm.BeginSentenceWrite(state)
-        for idx in xrange(pos):
+        for idx in range(pos):
             self._lm.BaseScore(state, sentence[idx].encode('utf-8'), state)
         best_form_idx = 0
         best_score = float('-inf')
@@ -167,7 +167,7 @@ class KenLMFormSelect(FormSelect):
         if binarize.returncode != 0:
             raise RuntimeError("LM build failed (error code: %d)" % binarize.returncode)
         # load the output into memory (extension will be filled in again)
-        self.load_model(re.sub('\.kenlm\.bin$', '', tmppath))
+        self.load_model(re.sub(r'\.kenlm\.bin$', '', tmppath))
 
 
 class RNNLMFormSelect(FormSelect, TFModel):
@@ -207,7 +207,7 @@ class RNNLMFormSelect(FormSelect, TFModel):
         self._checkpoint_params = None
         self._checkpoint_settings = None
         np.random.seed(rnd.randint(0, 2**32 - 1))
-        tf.set_random_seed(rnd.randint(-sys.maxint, sys.maxint))
+        tf.set_random_seed(rnd.randint(-2147483648, 2147483647))
 
     def _init_training(self, train_sents, valid_sents=None):
         """Initialize training (prepare vocabulary, prepare training batches), initialize the
@@ -247,12 +247,12 @@ class RNNLMFormSelect(FormSelect, TFModel):
         ids = ids[:self.max_sent_len]
         ids += [self.vocab.get('<STOP>')]
         # actually using max_sent_len + 1 (inputs exclude last step, targets exclude the 1st)
-        ids += [self.vocab.get('<VOID>') for _ in xrange(self.max_sent_len - len(ids) + 1)]
+        ids += [self.vocab.get('<VOID>') for _ in range(self.max_sent_len - len(ids) + 1)]
         return ids
 
     def _train_batches(self):
         """Create batches from the input; use as iterator."""
-        for batch_start in xrange(0, len(self._train_order), self.batch_size):
+        for batch_start in range(0, len(self._train_order), self.batch_size):
             sents = [self._train_data[idx]
                      for idx in self._train_order[batch_start: batch_start + self.batch_size]]
             inputs = np.array([sent[:-1] for sent in sents], dtype=np.int32)
@@ -260,9 +260,9 @@ class RNNLMFormSelect(FormSelect, TFModel):
             yield inputs, targets
 
     def _valid_batches(self):
-        for batch_start in xrange(0, len(self._valid_data), self.batch_size):
+        for batch_start in range(0, len(self._valid_data), self.batch_size):
             batch_end = min(batch_start + self.batch_size, len(self._valid_data))
-            sents = [self._valid_data[idx] for idx in xrange(batch_start, batch_end)]
+            sents = [self._valid_data[idx] for idx in range(batch_start, batch_end)]
             inputs = np.array([sent[:-1] for sent in sents], dtype=np.int32)
             targets = np.array([sent[1:] for sent in sents], dtype=np.int32)
             yield inputs, targets
@@ -282,7 +282,7 @@ class RNNLMFormSelect(FormSelect, TFModel):
             else:
                 self._cell = tf.contrib.rnn.BasicLSTMCell(self.emb_size)
             if re.match(r'/[0-9]$', self.cell_type):
-                self._cell = tf.contrib.rnn.MultiRNNCell([self.cell] * int(self.cell_type[-1]))
+                self._cell = tf.contrib.rnn.MultiRNNCell([self._cell] * int(self.cell_type[-1]))
             self._initial_state = self._cell.zero_state(tf.shape(self._inputs)[0], tf.float32)
 
             # embeddings
@@ -322,9 +322,9 @@ class RNNLMFormSelect(FormSelect, TFModel):
         # initialize TF session
         session_config = None
         if self.max_cores:
-            session_config = tf.ConfigProto(inter_op_parallelism_threads=self.max_cores,
-					    intra_op_parallelism_threads=self.max_cores)
-	self.session = tf.Session(config=session_config)
+            session_config = tf.ConfigProto(inter_op_parallelism_threads=self.max_cores, 
+                intra_op_parallelism_threads=self.max_cores)
+        self.session = tf.Session(config=session_config)
 
     def get_all_settings(self):
         return {'vocab': self.vocab,
@@ -341,10 +341,10 @@ class RNNLMFormSelect(FormSelect, TFModel):
 
         top_perp = float('nan')
 
-        for iter_no in xrange(1, self.passes + 1):
+        for iter_no in range(1, self.passes + 1):
             # preparing parameters
             iter_alpha = self.alpha * np.exp(-self.alpha_decay * iter_no)
-            self._train_order = range(len(self._train_data))
+            self._train_order = list(range(len(self._train_data)))
             if self.randomize:
                 rnd.shuffle(self._train_order)
             # training
@@ -403,7 +403,7 @@ class RNNLMFormSelect(FormSelect, TFModel):
             logits = self.session.run([self._logits], {self._inputs: inputs})[0]
             probs = softmax(logits)  # logits combine all sentences behind each other -- dimension
                                      # is (self.max_sent_len * self.batch_size, self.vocab_size)
-            for tok_no in xrange(len(probs)):
+            for tok_no in range(len(probs)):
                 perp += np.log2(probs[tok_no, targets[tok_no / self.max_sent_len,
                                                       tok_no % self.max_sent_len]])
             n_toks += np.prod(inputs.shape)
@@ -424,7 +424,7 @@ class RNNLMFormSelect(FormSelect, TFModel):
         self.set_model_params(self._checkpoint_params)
 
     def get_surface_form(self, sentence, pos, possible_forms):
-        log_debug("Pos: %d, forms: %s" % (pos, unicode(", ".join(possible_forms))))
+        log_debug("Pos: %d, forms: %s" % (pos, str(", ".join(possible_forms))))
         # get unnormalized scores for the whole vocabulary
         if pos >= self.max_sent_len:  # don't use whole sentence if it's too long
             pos -= pos - self.max_sent_len + 1
@@ -435,11 +435,11 @@ class RNNLMFormSelect(FormSelect, TFModel):
         scores = [logits[0][pos][self.vocab.get(form.lower(), self.vocab.get('<UNK>'))]
                   for form in possible_forms]
         probs = softmax(scores)
-        log_debug("Vocab: %s" % unicode(", ".join([unicode(self.vocab.get(form.lower(),
+        log_debug("Vocab: %s" % str(", ".join([str(self.vocab.get(form.lower(),
                                                                           self.vocab.get('<UNK>')))
-                                                   for f in possible_forms])))
-        log_debug("Scores: %s, Probs: %s" % (unicode(", ".join(["%.3f" % s for s in scores])),
-                                             unicode(", ".join(["%.3f" % p for p in probs]))))
+                                                   for form in possible_forms])))
+        log_debug("Scores: %s, Probs: %s" % (str(", ".join(["%.3f" % s for s in scores])),
+                                             str(", ".join(["%.3f" % p for p in probs]))))
         # sample from the prob. dist.
         if self._sample:
             return np.random.choice(possible_forms, p=probs)
@@ -504,7 +504,7 @@ class Lexicalizer(object):
         """Get 1st abstraction instruction for a specific slot in the list, put it back to
         the end of the list. If there is no matching abstraction instruction, return None."""
         try:
-            i, abst = ((i, a) for i, a in enumerate(absts) if a.slot == slot).next()
+            i, abst = next(((i, a) for i, a in enumerate(absts) if a.slot == slot))
             del absts[i]
             absts.append(abst)
             return abst
@@ -663,9 +663,9 @@ class Lexicalizer(object):
         """
         abstss = smart_load_absts(abst_file, len(gen_trees))
         for sent_no, (tree, absts) in enumerate(zip(gen_trees, abstss)):
-            log_debug("Lexicalizing sentence %d: %s" % ((sent_no + 1), unicode(tree)))
+            log_debug("Lexicalizing sentence %d: %s" % ((sent_no + 1), str(tree)))
             sent = self._tree_to_sentence(tree)
-            log_debug(unicode(sent))
+            log_debug(str(sent))
             for idx, tok in enumerate(sent):
                 if tok and tok.startswith('X-'):  # we would like to lexicalize
                     slot = tok[2:]
