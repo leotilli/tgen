@@ -4,7 +4,8 @@ dependencies:
   - pylint=2.2.2
   - numpy=1.15.4
   - regex=2018.11.22
-  - tensorflow-gpu=1.12.0
+  - tensorflow=1.12.0
+  # - tensorflow-gpu=1.12.0
   - pip:
     - https://github.com/kpu/kenlm/archive/master.zip
     - pudb==2018.1
