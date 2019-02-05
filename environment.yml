@@ -1,16 +1,14 @@
 name: tgen
 dependencies:
   - python=3.6.8
-  - pylint=2.2.2
-  - numpy=1.15.4
-  - regex=2018.11.22
   - tensorflow=1.12.0
   # - tensorflow-gpu=1.12.0
   - pip:
-    - https://github.com/kpu/kenlm/archive/master.zip
-    - pudb==2018.1
-    - https://github.com/leotilli/pytreex/archive/py36.zip
-    - recordclass==0.9
+    - regex==2019.02.03
+    - numpy==1.15.4
     - rpyc==4.0.2
-    - ufal.morphodita==1.9.2.1
-    - unidecode==1.0.23
+    - pudb==2018.1
+    - recordclass==0.9
+    - tensorflow==1.12.0
+    - https://github.com/kpu/kenlm/archive/master.zip
+    - https://github.com/leotilli/pytreex/archive/py36.zip
