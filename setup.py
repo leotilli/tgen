@@ -20,7 +20,7 @@ setup(
                       'recordclass==0.9',
                       'rpyc==4.0.2',
                       'ufal.morphodita==1.9.2.1',
-                      'unicodecsv==1.0.23'],
+                      'unidecode==1.0.23'],
     dependency_links=['https://github.com/kpu/kenlm/archive/master.zip#egg=kenlm',
                       'https://github.com/leotilli/pytreex/archive/py36.zip#egg=pytreex-0.1dev'],
     packages=find_packages()
